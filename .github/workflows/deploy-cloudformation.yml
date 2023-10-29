@@ -1,4 +1,4 @@
-name: Deploy MyCloudFormation Stack
+name: Deploy CloudFormation Stack
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-east-1'
 
-      - name: Deploy MyCloudFormation Stack
+      - name: Deploy CloudFormation Stack
         uses: aws-actions/workshop5@main
         with:
           name: deploycloud
