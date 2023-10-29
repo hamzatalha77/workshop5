@@ -23,7 +23,7 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                 Resource:
-                  - arn:aws:s3:::mo-ws4/*
+                  - arn:aws:s3:::workshop4bucket7777/*
 
   WriteS3ObjectLambda:
     Type: AWS::Lambda::Function
@@ -49,7 +49,7 @@ Resources:
                   writer.writerow(header)
                   writer.writerows(data)
 
-              bucket = 'mo-ws4'  # Replace with your target S3 bucket name
+              bucket = 'workshop4bucket7777'  # Replace with your target S3 bucket name
               s3 = boto3.client('s3')
               s3.upload_file(filename, bucket, 'people.csv')
 
@@ -66,7 +66,7 @@ Resources:
 
           def lambda_handler(event, context):
               s3 = boto3.client('s3')
-              bucket_name = 'mo-ws4'  # Replace with your source S3 bucket name
+              bucket_name = 'workshop4bucket7777'  # Replace with your source S3 bucket name
               object_key = 'insurance.csv'
 
               try:
