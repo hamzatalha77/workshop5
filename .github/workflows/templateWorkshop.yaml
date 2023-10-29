@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for Lambda functions and S3 bucket
+
+Resources:
+  S3FullAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: S3FullAccessRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3FullAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::mo-ws4/*
+
+  WriteS3ObjectLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: WriteS3ObjectLambda
+      Handler: index.lambda_handler
+      Role: !GetAtt S3FullAccessRole.Arn
+      Runtime: python3.8
+      Code:
+        ZipFile: |
+          import csv
+          import boto3
+
+          def lambda_handler(event, context):
+              # Step 2: Write Python code to create a CSV file
+              header = ['Name', 'Age', 'Profession']
+              data = [('John', '25', 'Engineer'),
+                      ('Anna', '28', 'Doctor'),
+                      ('Peter', '30', 'Artist')]
+              filename = '/tmp/people.csv'
+              with open(filename, 'w', newline='') as f:
+                  writer = csv.writer(f)
+                  writer.writerow(header)
+                  writer.writerows(data)
+
+              bucket = 'mo-ws4'  # Replace with your target S3 bucket name
+              s3 = boto3.client('s3')
+              s3.upload_file(filename, bucket, 'people.csv')
+
+  ReadS3ObjectLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: ReadS3ObjectLambda
+      Handler: index.lambda_handler
+      Role: !GetAtt S3FullAccessRole.Arn
+      Runtime: python3.8
+      Code:
+        ZipFile: |
+          import boto3
+
+          def lambda_handler(event, context):
+              s3 = boto3.client('s3')
+              bucket_name = 'mo-ws4'  # Replace with your source S3 bucket name
+              object_key = 'insurance.csv'
+
+              try:
+                  response = s3.get_object(Bucket=bucket_name, Key=object_key)
+                  data = response['Body'].read()
+                  # Do something with the data
+                  print(data)
+              except Exception as e:
+                  print(f"Error: {e}")
