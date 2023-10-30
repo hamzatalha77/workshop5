@@ -21,7 +21,7 @@ jobs:
           aws-region: 'us-east-1'
 
       - name: Deploy CloudFormation Stack
-        uses: aws-actions/aws-cloudformation-github-deploy@main
+        uses: aws-actions/aws-cloudformation-github-deploy@master
         with:
           name: deploycloud
           template: templateWorkshop.yaml
